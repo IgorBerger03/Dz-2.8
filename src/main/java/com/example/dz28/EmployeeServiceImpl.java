@@ -1,5 +1,6 @@
 package com.example.dz28;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -21,6 +22,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee add(String firstName, String lastName, int salary, int department) {
+        if (!validateInput(firstName,lastName)) {
+            throw new InvalidInputException();
+        }
         Employee employee = new Employee(firstName, lastName, salary, department);
         if (employees.contains(employee)) {
             throw new EmployeeAlreadyAdded();
@@ -31,6 +35,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee remove(String firstName, String lastName) {
+        if (!validateInput(firstName, lastName)){
+            throw new InvalidInputException();
+        }
         Employee employee = find(firstName, lastName);
         employees.remove(employee);
         return employee;
@@ -38,6 +45,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee find(String firstName, String lastName) {
+        if (!validateInput(firstName, lastName)){
+            throw new InvalidInputException();
+        }
         final Optional<Employee> employee = employees.stream()
                 .filter(e -> e.getFirstName().equals(firstName) && e.getLastName().equals(lastName))
                 .findAny();
@@ -85,6 +95,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         employees.add(new Employee("Василий", "Земсков", 38_000, 3));
         employees.add(new Employee("Полина", "Каримова", 40_000, 5));
         return employees;
+    }
+    private boolean validateInput(String firstName, String lastName){
+        return StringUtils.isAlpha(firstName) && StringUtils.isAlpha(lastName);
     }
 
 }
